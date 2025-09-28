@@ -26,4 +26,5 @@ class Assignments(SQLModel, table=True):
     deadline: Optional[datetime] = Field(default=datetime.now()+timedelta(days=1))
     updated_at: Optional[datetime] = Field(default_factory=None)
     priority: str = Field(index=True)
-    number_of_questions: Optional[int] = Field(default=0) 
+    number_of_questions: Optional[int] = Field(default=0)
+    number_of_completed_questions: Optional[int] = Field(default=0)
