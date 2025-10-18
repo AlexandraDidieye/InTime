@@ -12,7 +12,7 @@ def get_session():
 def subject_service(response: Response, session: Session = Depends(get_session)):
     return SubjectService(session=session, response=response)
 
-class SujectService:
+class SubjectService:
     def __init__(self,session,response):
         self.session = session  # Database session
         self.response = response
@@ -46,7 +46,7 @@ class SujectService:
         self.session.refresh(subject_item)
         return subject_item
 
-     def read_subjects(self,user_payload):
+    def read_subjects(self,user_payload):
         userid: int =  user_payload.get('id')
         statement = select(Subject).where(Subject.user_id == userid)
         user = self.session.exec(statement).all()
