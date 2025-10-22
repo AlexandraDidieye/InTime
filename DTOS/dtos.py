@@ -35,3 +35,14 @@ class UpdateAssignmentDTO(BaseModel):
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=0)
     subject_id: int
+
+class CreateUserDTO(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
+    username: str
+    password: str
+
+class LoginDTO(BaseModel):
+    username: str = Field(index=True)
+    password: str

@@ -4,7 +4,8 @@ import uvicorn
 from database.db import *
 from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
-
+from routers.subject_routers import router2
+from routers.user_routers import router_user
 
 def create_db_and_table():
     SQLModel.metadata.create_all(engine)  # creates table for model
@@ -22,7 +23,8 @@ app = FastAPI(lifespan=lifespan)
 def example():
     return {"Title": "InTime"}
 
-
+app.include_router(router_user,tags=['Auth'])
+app.include_router(router2,prefix="/Subjects")
 
 
 
