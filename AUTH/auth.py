@@ -20,7 +20,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 
 
-bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # helps hash passwords
+bcrypt_context = CryptContext(schemes=["argon2"], deprecated="auto") # helps hash passwords
 
 def get_session():
     with Session(engine) as session:

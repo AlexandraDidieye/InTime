@@ -10,7 +10,7 @@ import jwt
 
 
 def user_post(dto, session):
-    create_user_model = User(**dto.model_dump(), hashed_password=bcrypt_context.hash(dto.password))
+    create_user_model = User(**dto.model_dump(), hashed_password=argon2_context.hash(dto.password))
     existing= select(User).where(User.email == create_user_model.email or User.username == create_user_model.username)
     list_existing = session.exec(existing).first()
     if list_existing:
@@ -25,7 +25,7 @@ def authenticate_user(username:str, password:str, db):
     user = db.exec(statement).first()
     if not user:
         return False
-    if not bcrypt_context.verify(password, user.hashed_password):
+    if not argon2_context.verify(password, user.hashed_password):
         return False
     return user
 
