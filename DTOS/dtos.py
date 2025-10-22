@@ -40,7 +40,6 @@ class CreateUserDTO(BaseModel):
     email: str
     first_name: str
     last_name: str
-    username: str
     password: str
 
 class LoginDTO(BaseModel):

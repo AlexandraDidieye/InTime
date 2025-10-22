@@ -1,17 +1,19 @@
 from fastapi.security import HTTPAuthorizationCredentials
 from MODELS.models import User
-from AUTH.auth import bcrypt_context,SECRET_KEY,ALGORITHM,security_scheme
+from AUTH.auth import SECRET_KEY,ALGORITHM,security_scheme
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from fastapi import status,Depends,HTTPException
 from sqlmodel import select
 import jwt
 
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 
-
+ph = PasswordHasher()
 def user_post(dto, session):
-    create_user_model = User(**dto.model_dump(), hashed_password=argon2_context.hash(dto.password))
-    existing= select(User).where(User.email == create_user_model.email or User.username == create_user_model.username)
+    create_user_model = User(**dto.model_dump(), hashed_password=ph.hash(dto.password))
+    existing= select(User).where(User.email == create_user_model.email)
     list_existing = session.exec(existing).first()
     if list_existing:
         raise HTTPException(status_code=400, detail="Email or username already exists")
@@ -25,7 +27,7 @@ def authenticate_user(username:str, password:str, db):
     user = db.exec(statement).first()
     if not user:
         return False
-    if not argon2_context.verify(password, user.hashed_password):
+    if not ph.verify(password, user.hashed_password):
         return False
     return user
 
