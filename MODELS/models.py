@@ -8,6 +8,7 @@ class User(SQLModel, table=True):
     email: str = Field(sa_column=Column("email", String, unique=True))
     first_name: str
     last_name:str
+    hashed_password: str
     subjects: List["Subject"] = Relationship(back_populates="user",sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     assignments: List["Assignment"] = Relationship(back_populates="user")
 

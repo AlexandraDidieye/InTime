@@ -22,8 +22,8 @@ def user_post(dto, session):
     session.commit()
     return "User created Successfully"
 
-def authenticate_user(username:str, password:str, db):
-    statement = select(User).where(User.username == username)
+def authenticate_user(email:str, password:str, db):
+    statement = select(User).where(User.email == email)
     user = db.exec(statement).first()
     if not user:
         return False
@@ -33,14 +33,14 @@ def authenticate_user(username:str, password:str, db):
 
 
 def login_for_token(dto,session):
-    user = authenticate_user(dto.username, dto.password, session)
+    user = authenticate_user(dto.email, dto.password, session)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
-    token = create_access_token(user.username, user.id, timedelta(minutes=60))
+    token = create_access_token(user.email, user.id, timedelta(minutes=60))
     return {'access_token': token, 'token_type': 'bearer'}
 
-def create_access_token(first_name:str, user_id:int, expires_delta: timedelta):
-    encode = {'sub': first_name, 'id': user_id}
+def create_access_token(email:str, user_id:int, expires_delta: timedelta):
+    encode = {'sub': email, 'id': user_id}
     expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -54,9 +54,9 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     try:
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM], issuer=None,
                              leeway=0, options={"verify_aud": False, "verify_signature": True})
-        username: str = payload.get('sub')
+        email: str = payload.get('sub')
         user_id: int =  payload.get('id')
-        return {'username': username, 'id': user_id}
+        return {'email': email, 'id': user_id}
     except jwt.exceptions.DecodeError as error:
         raise HTTPException(status_code=401, detail=error.__str__())
     except jwt.exceptions.ExpiredSignatureError:
