@@ -12,11 +12,12 @@ from argon2.exceptions import VerifyMismatchError
 
 ph = PasswordHasher()
 def user_post(dto, session):
-    create_user_model = User(**dto.model_dump(), hashed_password=ph.hash(dto.password))
+    hashed = ph.hash(dto.password)
+    create_user_model = User(**dto.model_dump(), hashed_password=hashed)
     existing= select(User).where(User.email == create_user_model.email)
     list_existing = session.exec(existing).first()
     if list_existing:
-        raise HTTPException(status_code=400, detail="Email or username already exists")
+        raise HTTPException(status_code=400, detail="Email already exists")
     
     session.add(create_user_model)
     session.commit()
@@ -27,7 +28,7 @@ def authenticate_user(email:str, password:str, db):
     user = db.exec(statement).first()
     if not user:
         return False
-    if not ph.verify(password, user.hashed_password):
+    if not ph.verify(user.hashed_password,password):
         return False
     return user
 

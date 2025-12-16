@@ -51,12 +51,12 @@ def read_subject(subject_id: int, subject_service: SubjectService = Depends(subj
 
 
 @router2.put("/{subject_id}", response_model=Subject)
-def update_todolist(subject_id: int, task: UpdateSubjectDTO, subject_service: SubjectService = Depends(subject_service), payload: dict = Depends(auth.jwt_decode_token)):
+def update_subject(subject_id: int, task: UpdateSubjectDTO, subject_service: SubjectService = Depends(subject_service), payload: dict = Depends(auth.jwt_decode_token)):
     update = subject_service.update_subjects(subject_id, task, payload)
     return update
 
 @router2.delete("/{subject_id}", status_code=204)
-def delete_todolist(subject_id: int, subject_service: SubjectService = Depends(subject_service), payload: dict = Depends(auth.jwt_decode_token)):
+def delete_subject(subject_id: int, subject_service: SubjectService = Depends(subject_service), payload: dict = Depends(auth.jwt_decode_token)):
     delete = subject_service.delete_subject(subject_id, payload)
     return delete
 
