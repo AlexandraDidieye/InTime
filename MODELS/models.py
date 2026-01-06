@@ -1,4 +1,4 @@
-from typing import Optional,List
+from typing import Optional,List, Dict, Any
 from sqlmodel import Field, SQLModel,Relationship
 from datetime import datetime,timedelta
 from sqlalchemy import Column,String
@@ -37,5 +37,9 @@ class Assignment(SQLModel, table=True):
     number_of_completed_questions: Optional[int] = Field(default=0)
     subject_id: int = Field(default=None,foreign_key="subject.id")
     subject: Optional[Subject] = Relationship(back_populates="assignments")
+    chunks: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        sa_column=Column(JSON)
+    )
     user_id : int = Field(default=None, foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="assignments")
