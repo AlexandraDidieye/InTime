@@ -3,7 +3,9 @@ from MODELS.models import *
 from DTOS.dtos import CreateAssignmentDTO
 from sqlmodel import Session,select
 from database.db import *
-from typing import List
+from typing import List,Dict
+from datetime import date, timedelta
+
 
 def get_session():
     with Session(engine) as session:
@@ -11,6 +13,41 @@ def get_session():
 
 def assignment_service(response: Response, session: Session = Depends(get_session)):
     return AssignmentService(session=session, response=response)
+
+def days_between(start: date, end: date):
+    days = []
+    current = start
+    while current <= end:
+        days.append(current)
+        current += timedelta(days=1)
+    return days
+
+
+def generate_chunks(
+    start_date: date,
+    deadline: date,
+    total_questions: int
+)
+
+    days = days_between(start_date, deadline)
+    if not days:
+        return []
+
+    per_day = max(1, total_questions // len(days))
+    remainder = total_questions % len(days)
+
+    chunks = []
+    for i, day in enumerate(days):
+        questions = per_day + (1 if i < remainder else 0)
+        chunks.append({
+            "chunk_id": str(day),
+            "date": str(day),
+            "total_questions": questions,
+            "completed_questions": 0,
+            "status": "pending"
+        })
+
+    return chunks
 
 class AssignmentService:
     def __init__(self,session,response):
@@ -25,6 +62,14 @@ class AssignmentService:
             raise HTTPException(status_code=404, detail="User not Found")
         if user.id != userid:
             raise HTTPException(status_code=401, detail="Unauthorized")
+        today = datetime.now().date()
+        deadline = assignment.deadline.date()
+
+        assignment.chunks = generate_chunks(
+            start_date=today,
+            deadline=deadline,
+            total_questions=assignment.number_of_questions
+        )
         self.session.add(db_item)
         self.session.commit()
         self.session.refresh(db_item)
