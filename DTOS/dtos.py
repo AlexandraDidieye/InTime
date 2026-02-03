@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,date
 from typing import Optional,List
 from sqlmodel import Field
 from MODELS.models import Subject, Assignment
@@ -22,7 +22,7 @@ class ResponseSubjectDTO(BaseModel):
 
 class CreateAssignmentDTO(BaseModel):
     name: str = Field(index=True) 
-    deadline: Optional[datetime] = Field(default=datetime.now()+timedelta(days=1))
+    deadline: Optional[datetime] = Field(default=datetime.now)
     description: Optional[str] = None
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=0)
@@ -30,7 +30,7 @@ class CreateAssignmentDTO(BaseModel):
 
 class UpdateAssignmentDTO(BaseModel):
     name: str = Field(index=True) 
-    deadline: Optional[datetime] = Field(default=datetime.now()+timedelta(days=1))
+    deadline: Optional[datetime] = Field(default_factory=datetime.now)
     description: Optional[str] = None
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=0)

@@ -1,7 +1,7 @@
 from typing import Optional,List, Dict, Any
 from sqlmodel import Field, SQLModel,Relationship
 from datetime import datetime,timedelta
-from sqlalchemy import Column,String
+from sqlalchemy import Column,String,JSON
 
 class User(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
@@ -28,12 +28,12 @@ class Assignment(SQLModel, table=True):
     name: str = Field(index=True)
     is_completed: bool = Field(default=False)  # Default value for is_completed
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.now)  # Default factory for current timestamp
-    completed_at: Optional[datetime] = Field(default_factory=None)
-    deadline: Optional[datetime] = Field(default=datetime.now()+timedelta(days=1))
-    updated_at: Optional[datetime] = Field(default_factory=None)
+    created_at: datetime = Field(default=datetime.now)  # Default factory for current timestamp
+    completed_at: Optional[datetime] = Field(default=None)
+    deadline: Optional[datetime] = Field(default=datetime.now)
+    updated_at: Optional[datetime] = Field(default=datetime.now)
     priority: str = Field(index=True)
-    number_of_questions: Optional[int] = Field(default=0)
+    number_of_questions: Optional[int] = Field(default=1)
     number_of_completed_questions: Optional[int] = Field(default=0)
     subject_id: int = Field(default=None,foreign_key="subject.id")
     subject: Optional[Subject] = Relationship(back_populates="assignments")
@@ -41,5 +41,7 @@ class Assignment(SQLModel, table=True):
         default_factory=list,
         sa_column=Column(JSON)
     )
+    user_id : int = Field(default=None, foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="assignments")
     user_id : int = Field(default=None, foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="assignments")

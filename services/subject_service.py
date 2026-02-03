@@ -38,7 +38,7 @@ class SubjectService:
             raise HTTPException(status_code=404, detail="Subject Not Found!")
         if subject_item.user_id != userid:
             raise HTTPException(status_code=401, detail="Unauthorized")
-        subject_data = task.model_dump(exclude_unset=False)  
+        subject_data = subject_item.model_dump(exclude_unset=False)  
         for key, value in subject_data.items(): 
             setattr(subject_item, key, value)
         self.session.add(subject_item)

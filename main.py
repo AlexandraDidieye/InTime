@@ -6,6 +6,7 @@ from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
 from routers.subject_routers import router2
 from routers.user_routers import router_user
+from routers.assignment_routers import router3
 
 def create_db_and_table():
     SQLModel.metadata.create_all(engine)  # creates table for model
@@ -25,6 +26,7 @@ def example():
 
 app.include_router(router_user,tags=['Auth'])
 app.include_router(router2,prefix="/Subjects")
+app.include_router(router3,prefix="/Assignments")
 
 
 
