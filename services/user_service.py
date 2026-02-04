@@ -1,6 +1,6 @@
 from fastapi.security import HTTPAuthorizationCredentials
 from MODELS.models import User
-from AUTH.auth import SECRET_KEY,ALGORITHM,security_scheme
+from AUTH.auth import SECRET_KEY,security_scheme
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from fastapi import status,Depends,HTTPException
@@ -8,7 +8,7 @@ from sqlmodel import select
 import jwt
 
 from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
+from argon2.exceptions import VerifyMismatchError, VerifyMismatchError, InvalidHash
 
 ph = PasswordHasher()
 def user_post(dto, session):
@@ -26,10 +26,13 @@ def user_post(dto, session):
 def authenticate_user(email:str, password:str, db):
     statement = select(User).where(User.email == email)
     user = db.exec(statement).first()
+    try:
+        ph.verify(user.hashed_password, password)
+    except (VerifyMismatchError, InvalidHash):
+        return False
     if not user:
         return False
-    if not ph.verify(user.hashed_password,password):
-        return False
+    
     return user
 
 
@@ -44,7 +47,7 @@ def create_access_token(email:str, user_id:int, expires_delta: timedelta):
     encode = {'sub': email, 'id': user_id}
     expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(encode, SECRET_KEY, algorithm="HS256")
 
 
 
@@ -53,7 +56,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     if credentials.scheme != "Bearer":
         raise HTTPException(status_code=401, detail="Invalid authentication scheme")
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM], issuer=None,
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"], issuer=None,
                              leeway=0, options={"verify_aud": False, "verify_signature": True})
         email: str = payload.get('sub')
         user_id: int =  payload.get('id')

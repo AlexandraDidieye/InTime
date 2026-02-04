@@ -22,15 +22,16 @@ class ResponseSubjectDTO(BaseModel):
 
 class CreateAssignmentDTO(BaseModel):
     name: str = Field(index=True) 
-    deadline: Optional[datetime] = Field(default=datetime.now)
+    deadline: Optional[datetime] = Field(default=None)
     description: Optional[str] = None
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=0)
     subject_id: int
+    user_id: int
 
 class UpdateAssignmentDTO(BaseModel):
     name: str = Field(index=True) 
-    deadline: Optional[datetime] = Field(default_factory=datetime.now)
+    deadline: Optional[datetime] = Field(default=None)
     description: Optional[str] = None
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=0)

@@ -16,7 +16,6 @@ load_dotenv('.env')
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALGORITHM = os.getenv("ALGORITHM")
 
 
 
@@ -39,7 +38,7 @@ async def jwt_decode_token(credentials: HTTPAuthorizationCredentials = Depends(s
     if credentials.scheme != "Bearer":
         raise HTTPException(status_code=401, detail="Invalid authentication scheme")
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM], issuer=None,
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"], issuer=None,
                              leeway=0, options={"verify_aud": False, "verify_signature": True})
         return payload
     except jwt.exceptions.DecodeError as error:

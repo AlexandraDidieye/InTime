@@ -28,10 +28,12 @@ class Assignment(SQLModel, table=True):
     name: str = Field(index=True)
     is_completed: bool = Field(default=False)  # Default value for is_completed
     description: Optional[str] = None
-    created_at: datetime = Field(default=datetime.now)  # Default factory for current timestamp
+    created_at: datetime = Field(default_factory=datetime.now)
+  # Default factory for current timestamp
     completed_at: Optional[datetime] = Field(default=None)
-    deadline: Optional[datetime] = Field(default=datetime.now)
-    updated_at: Optional[datetime] = Field(default=datetime.now)
+    deadline: Optional[datetime] = Field(default=None)
+    updated_at: datetime = Field(default_factory=datetime.now)
+
     priority: str = Field(index=True)
     number_of_questions: Optional[int] = Field(default=1)
     number_of_completed_questions: Optional[int] = Field(default=0)
@@ -43,5 +45,4 @@ class Assignment(SQLModel, table=True):
     )
     user_id : int = Field(default=None, foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="assignments")
-    user_id : int = Field(default=None, foreign_key="user.id")
-    user: Optional[User] = Relationship(back_populates="assignments")
+    
