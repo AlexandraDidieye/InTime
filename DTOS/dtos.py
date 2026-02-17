@@ -29,6 +29,26 @@ class CreateAssignmentDTO(BaseModel):
     subject_id: int
     user_id: int
 
+class ChunkDTO(BaseModel):
+    chunk_id: str
+    date: str
+    total_questions: int
+    completed_questions: int
+    status: str
+
+class ResponseAssignmentDTO(BaseModel):
+    name: str = Field(index=True) 
+    deadline: Optional[datetime] = Field(default=None)
+    description: Optional[str] = None
+    priority: str = Field(index=True)
+    number_of_questions: Optional[int] = Field(default=0)
+    subject_id: int
+    user_id: int
+    chunks: list[ChunkDTO]
+    class Config:
+        from_attributes = True
+
+
 class UpdateAssignmentDTO(BaseModel):
     name: str = Field(index=True) 
     deadline: Optional[datetime] = Field(default=None)

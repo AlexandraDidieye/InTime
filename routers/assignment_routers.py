@@ -1,10 +1,10 @@
 from fastapi import  Response, Depends,APIRouter
 from MODELS.models import *
-from DTOS.dtos import CreateAssignmentDTO, UpdateAssignmentDTO
+from DTOS.dtos import CreateAssignmentDTO, UpdateAssignmentDTO,ResponseAssignmentDTO
 from datetime import datetime
 from database.db import *
 from typing import List
-from services.assignment_service import CreateAssignmentDTO, AssignmentService  # Assuming the service is in a services folder
+from services.assignment_service import AssignmentService  # Assuming the service is in a services folder
 from sqlmodel import Session
 from services.user_service import get_current_user
 from AUTH import auth
@@ -23,7 +23,7 @@ def assignment_serv(response: Response, session: Session = Depends(get_session))
 
 
 
-@router3.post("", response_model=Subject, status_code=201)
+@router3.post("", response_model=ResponseAssignmentDTO, status_code=201)
 def create_assigt(task: CreateAssignmentDTO, assignment_serv: AssignmentService = Depends(assignment_serv), payload: dict = Depends(auth.jwt_decode_token)):
     db_item = assignment_serv.create_assignment(task, payload)
     return db_item
