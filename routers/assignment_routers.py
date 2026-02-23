@@ -24,11 +24,11 @@ def assignment_serv(response: Response, session: Session = Depends(get_session))
 
 
 @router3.post("", response_model=ResponseAssignmentDTO, status_code=201)
-def create_assigt(task: CreateAssignmentDTO, assignment_serv: AssignmentService = Depends(assignment_serv), payload: dict = Depends(auth.jwt_decode_token)):
+def create_assignments(task: CreateAssignmentDTO, assignment_serv: AssignmentService = Depends(assignment_serv), payload: dict = Depends(auth.jwt_decode_token)):
     db_item = assignment_serv.create_assignment(task, payload)
     return db_item
 
 @router3.delete("/{assignment_id}", status_code=204)
-def delete_assigy(assignment_id: int, assignment_serv: AssignmentService = Depends(assignment_serv), payload: dict = Depends(auth.jwt_decode_token)):
+def delete_assignments(assignment_id: int, assignment_serv: AssignmentService = Depends(assignment_serv), payload: dict = Depends(auth.jwt_decode_token)):
     delete = assignment_serv.delete_assignment(assignment_id, payload)
     return delete

@@ -58,13 +58,17 @@ class AssignmentService:
         userid: int = user_payload.get('id')
         assignment = Assignment(**task.model_dump())
         user = self.session.get(User, assignment.user_id)
+        
         if not user:
             raise HTTPException(status_code=404, detail="User not Found")
         if user.id != userid:
             raise HTTPException(status_code=401, detail="Unauthorized")
+        subject = self.session.get(Subject,assignment.subject_id)
+        if not subject:
+            raise HTTPException(status_code=404, detail="Subject not Found")
         today = datetime.now()
         dline = assignment.deadline
-
+        subject.total_assigments += 1
         if dline is None:
             raise HTTPException(status_code=400, detail="Deadline is required")
         if assignment.number_of_questions is None:
@@ -83,11 +87,16 @@ class AssignmentService:
 
     def update_assignment(self, id,subject,user_payload):
         userid: int =  user_payload.get('id')
+
         assignment_item = self.session.get(Assignment, id)
+        
         if not assignment_item:
             raise HTTPException(status_code=404, detail="Assignment Not Found!")
         if assignment_item.user_id != userid:
             raise HTTPException(status_code=401, detail="Unauthorized")
+        subject = self.session.get(Subject,assignment_item.subject_id)
+        if not subject:
+            raise HTTPException(status_code=404, detail="Subject not Found")
         assignment_data = assignment_item.model_dump(exclude_unset=False)  
         for key, value in assignment_data.items(): 
             setattr(assignment_item, key, value)
@@ -107,6 +116,9 @@ class AssignmentService:
         assignment = self.session.get(Assignment, id)
         if assignment.user_id != userid:
             raise HTTPException(status_code=404, detail="Assignment not found")
+        subject = self.session.get(Subject,assignment.subject_id)
+        if not subject:
+            raise HTTPException(status_code=404, detail="Subject not Found")
         return assignment
 
     def delete_assignment(self, id, user_payload):
@@ -116,6 +128,9 @@ class AssignmentService:
             raise HTTPException(status_code=404, detail="Assignment hasn't been created")
         if assignment.user_id != userid:
             raise HTTPException(status_code=401, detail="Unauthorized")
+        subject = self.session.get(Subject,assignment.subject_id)
+        if not subject:
+            raise HTTPException(status_code=404, detail="Subject not Found")
         self.session.delete(assignment)
         self.session.commit()
         self.response.status_code = status.HTTP_204_NO_CONTENT
