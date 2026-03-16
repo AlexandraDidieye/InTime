@@ -4,7 +4,7 @@ from DTOS.dtos import CreateAssignmentDTO
 from sqlmodel import Session,select
 from database.db import *
 from typing import List,Dict
-from datetime import date, timedelta
+from datetime import date, timedelta, time
 
 
 def get_session():
@@ -28,8 +28,12 @@ def generate_chunks(
     deadline: datetime,
     total_questions: int
 ):
+    if deadline.time() >= time(21, 0):  # 9 PM or later
+        end_date = deadline.date()
+    else:
+        end_date = (deadline - timedelta(days=1)).date()
 
-    days = days_between(start_date.date(), deadline.date())
+    days = days_between(start_date.date(), end_date)
     if not days:
         return []
 
