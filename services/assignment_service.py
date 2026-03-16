@@ -68,7 +68,7 @@ class AssignmentService:
             raise HTTPException(status_code=404, detail="Subject not Found")
         today = datetime.now()
         dline = assignment.deadline
-        subject.total_assigments += 1
+        subject.total_assignments += 1
         if dline is None:
             raise HTTPException(status_code=400, detail="Deadline is required")
         if assignment.number_of_questions is None:
@@ -131,6 +131,7 @@ class AssignmentService:
         subject = self.session.get(Subject,assignment.subject_id)
         if not subject:
             raise HTTPException(status_code=404, detail="Subject not Found")
+        subject.total_assignments -= 1
         self.session.delete(assignment)
         self.session.commit()
         self.response.status_code = status.HTTP_204_NO_CONTENT
